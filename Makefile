@@ -43,14 +43,20 @@ else
 	cflags += -O2
 endif
 
+cxxsources := $(wildcard src/brogue/cpp/*.cpp)
+
 objects := $(sources:.c=.o)
+cxxobjects := $(cxxsources:.cpp=.o)
 
 .PHONY: clean
 
 %.o: %.c src/brogue/Rogue.h src/brogue/IncludeGlobals.h
 	$(CC) $(cppflags) $(CPPFLAGS) $(cflags) $(CFLAGS) -c $< -o $@
 
-bin/brogue: $(objects)
+src/brogue/cpp/%.o: src/brogue/cpp/%.cpp
+	$(CXX) -std=c++17 -c $< -o $@
+
+bin/brogue: $(objects) $(cxxobjects)
 	$(CC) $(cflags) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(libs) $(LDLIBS)
 
 windows/icon.o: windows/icon.rc
@@ -61,7 +67,7 @@ bin/brogue.exe: $(objects) windows/icon.o
 	mt -manifest windows/brogue.exe.manifest '-outputresource:bin/brogue.exe;1'
 
 clean:
-	$(RM) src/brogue/*.o src/platform/*.o windows/icon.o bin/brogue{,.exe}
+	$(RM) src/brogue/*.o src/platform/*.o windows/icon.o bin/brogue{,.exe} src/brogue/cpp/*.o
 
 
 # Release archives

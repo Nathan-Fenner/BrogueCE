@@ -3276,6 +3276,9 @@ extern "C" {
     void pdsSetDistance(pdsMap *map, short x, short y, short distance);
     void pdsBatchOutput(pdsMap *map, short **distanceMap);
 
+
+    int greeting_num();
+
 #if defined __cplusplus
 }
 #endif

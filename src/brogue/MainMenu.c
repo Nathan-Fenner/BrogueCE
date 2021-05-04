@@ -290,7 +290,7 @@ void titleMenu() {
     // Initialize the title menu buttons.
     encodeMessageColor(whiteColorEscape, 0, &white);
     encodeMessageColor(goldColorEscape, 0, KEYBOARD_LABELS ? &itemMessageColor : &white);
-    sprintf(newGameText, "      %sN%sew Game      ", goldColorEscape, whiteColorEscape);
+    sprintf(newGameText, "      %sN%sew %d      ", goldColorEscape, whiteColorEscape, greeting_num());
     sprintf(customNewGameText, " %sN%sew Game (custom) ", goldColorEscape, whiteColorEscape);
     b = 0;
     button = -1;

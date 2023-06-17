@@ -745,7 +745,6 @@ void drawManacles(short x, short y) {
 // If x is negative, location is random.
 // Returns a pointer to the leader.
 creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFlags, unsigned long requiredFlags) {
-    short loc[2];
     short i, failsafe, depth;
     hordeType *theHorde;
     creature *leader, *preexistingMonst;
@@ -789,8 +788,9 @@ creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFla
     if (x < 0 || y < 0) {
         i = 0;
         do {
-            while (!randomMatchingLocation(&(loc[0]), &(loc[1]), FLOOR, NOTHING, (hordeCatalog[hordeID].spawnsIn ? hordeCatalog[hordeID].spawnsIn : -1))
-                   || passableArcCount(loc[0], loc[1]) > 1) {
+            pos monsterLoc = {-1, -1};
+            while (!randomMatchingLocation(&monsterLoc, FLOOR, NOTHING, (hordeCatalog[hordeID].spawnsIn ? hordeCatalog[hordeID].spawnsIn : -1))
+                   || passableArcCount(monsterLoc.x, monsterLoc.y) > 1) {
                 if (!--failsafe) {
                     return NULL;
                 }
@@ -800,8 +800,8 @@ creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFla
                     return NULL;
                 }
             }
-            x = loc[0];
-            y = loc[1];
+            x = monsterLoc.x;
+            y = monsterLoc.y;
             i++;
 
             // This "while" condition should contain IN_FIELD_OF_VIEW, since that is specifically

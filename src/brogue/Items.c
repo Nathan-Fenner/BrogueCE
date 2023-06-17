@@ -364,13 +364,13 @@ short chooseKind(itemTable *theTable, short numKinds) {
 
 // Places an item at (x,y) if provided or else a random location if they're 0. Inserts item into the floor list.
 item *placeItem(item *theItem, short x, short y) {
-    short loc[2];
     enum dungeonLayers layer;
     char theItemName[DCOLS], buf[DCOLS];
+
+    pos loc = {-1, -1};
     if (x <= 0 || y <= 0) {
-        randomMatchingLocation(&(loc[0]), &(loc[1]), FLOOR, NOTHING, -1);
-        theItem->loc.x = loc[0];
-        theItem->loc.y = loc[1];
+        randomMatchingLocation(&loc, FLOOR, NOTHING, -1);
+        theItem->loc = loc;
     } else {
         theItem->loc.x = x;
         theItem->loc.y = y;
@@ -667,7 +667,10 @@ void populateItems(short upstairsX, short upstairsY) {
         // Choose a placement location.
         if ((theItem->category & FOOD) || ((theItem->category & POTION) && theItem->kind == POTION_STRENGTH)) {
             do {
-                randomMatchingLocation(&x, &y, FLOOR, NOTHING, -1); // Food and gain strength don't follow the heat map.
+                pos loc = {-1, -1};
+                randomMatchingLocation(&loc, FLOOR, NOTHING, -1); // Food and gain strength don't follow the heat map.
+                x = loc.x;
+                y = loc.y;
             } while (passableArcCount(x, y) > 1); // Not in a hallway.
         } else {
             getItemSpawnLoc(itemSpawnHeatMap, &x, &y, &totalHeat);

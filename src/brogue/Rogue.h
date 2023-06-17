@@ -2918,7 +2918,7 @@ extern "C" {
     void freeCreatureList(creatureList *list);
     void removeDeadMonsters();
     void freeEverything();
-    boolean randomMatchingLocation(short *x, short *y, short dungeonType, short liquidType, short terrainType);
+    boolean randomMatchingLocation(pos *p, short dungeonType, short liquidType, short terrainType);
     enum dungeonLayers highestPriorityLayer(short x, short y, boolean skipGas);
     enum dungeonLayers layerWithTMFlag(short x, short y, unsigned long flag);
     enum dungeonLayers layerWithFlag(short x, short y, unsigned long flag);

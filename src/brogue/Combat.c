@@ -144,20 +144,18 @@ boolean attackHit(creature *attacker, creature *defender) {
     return rand_percent(hitProbability(attacker, defender));
 }
 
-void addMonsterToContiguousMonsterGrid(short x, short y, creature *monst, char grid[DCOLS][DROWS]) {
-    short newX, newY;
-    enum directions dir;
-    creature *tempMonst;
+void addMonsterToContiguousMonsterGrid(pos destination, creature *monst, char grid[DCOLS][DROWS]) {
+    grid[destination.x][destination.y] = true;
+    for (enum directions dir=0; dir<4; dir++) {
+        const pos newPosition = {
+            destination.x + nbDirs[dir][0],
+            destination.y + nbDirs[dir][1]
+        };
 
-    grid[x][y] = true;
-    for (dir=0; dir<4; dir++) {
-        newX = x + nbDirs[dir][0];
-        newY = y + nbDirs[dir][1];
-
-        if (coordinatesAreInMap(newX, newY) && !grid[newX][newY]) {
-            tempMonst = monsterAtLoc(newX, newY);
+        if (coordinatesAreInMap(newPosition.x, newPosition.y) && !grid[newPosition.x][newPosition.y]) {
+            creature *tempMonst = monsterAtLoc(newPosition.x, newPosition.y);
             if (tempMonst && monstersAreTeammates(monst, tempMonst)) {
-                addMonsterToContiguousMonsterGrid(newX, newY, monst, grid);
+                addMonsterToContiguousMonsterGrid(newPosition, monst, grid);
             }
         }
     }
@@ -185,7 +183,7 @@ void splitMonster(creature *monst, short x, short y) {
     }
 
     // Find the contiguous group of monsters.
-    addMonsterToContiguousMonsterGrid(monst->loc.x, monst->loc.y, monst, monsterGrid);
+    addMonsterToContiguousMonsterGrid(monst->loc, monst, monsterGrid);
 
     // Find the eligible edges around the group of monsters.
     for (i=0; i<DCOLS; i++) {

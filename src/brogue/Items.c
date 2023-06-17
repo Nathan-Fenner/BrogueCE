@@ -6885,7 +6885,7 @@ void magicMapCell(short x, short y) {
 }
 
 void readScroll(item *theItem) {
-    short i, j, x, y, numberOfMonsters = 0;
+    short i, j, numberOfMonsters = 0;
     item *tempItem;
     creature *monst;
     boolean hadEffect = false;
@@ -7098,11 +7098,10 @@ void readScroll(item *theItem) {
         case SCROLL_SUMMON_MONSTER:
             for (j=0; j<25 && numberOfMonsters < 3; j++) {
                 for (i=0; i<8; i++) {
-                    x = player.loc.x + nbDirs[i][0];
-                    y = player.loc.y + nbDirs[i][1];
-                    if (!cellHasTerrainFlag(x, y, T_OBSTRUCTS_PASSABILITY) && !(pmap[x][y].flags & HAS_MONSTER)
+                    const pos spawnPos = nbDirOffset(player.loc, i);
+                    if (!cellHasTerrainFlag(spawnPos.x, spawnPos.y, T_OBSTRUCTS_PASSABILITY) && !(pmap[spawnPos.x][spawnPos.y].flags & HAS_MONSTER)
                         && rand_percent(10) && (numberOfMonsters < 3)) {
-                        monst = spawnHorde(0, x, y, (HORDE_LEADER_CAPTIVE | HORDE_NO_PERIODIC_SPAWN | HORDE_IS_SUMMONED | HORDE_MACHINE_ONLY), 0);
+                        monst = spawnHorde(0, spawnPos.x, spawnPos.y, (HORDE_LEADER_CAPTIVE | HORDE_NO_PERIODIC_SPAWN | HORDE_IS_SUMMONED | HORDE_MACHINE_ONLY), 0);
                         if (monst) {
                             // refreshDungeonCell(x, y);
                             // monst->creatureState = MONSTER_TRACKING_SCENT;

@@ -32,6 +32,21 @@ extern short **chokeMap;
 
 extern const short nbDirs[8][2];
 extern const short cDirs[8][2];
+
+static inline pos nbDirOffset(pos location, enum directions d) {
+  return (pos) {
+    location.x + nbDirs[d][0],
+    location.y + nbDirs[d][1]
+  };
+}
+static inline pos nbDirOffsetScale(pos location, enum directions d, int scale) {
+  return (pos) {
+    location.x + nbDirs[d][0] * scale,
+    location.y + nbDirs[d][1] * scale
+  };
+}
+
+
 extern levelData *levels;
 extern creature player;
 extern playerCharacter rogue;
@@ -199,6 +214,29 @@ extern const mutation mutationCatalog[NUMBER_MUTATORS];
 extern const monsterClass monsterClassCatalog[MONSTER_CLASS_COUNT];
 
 extern const feat featTable[FEAT_COUNT];
+
+
+#define terrainFlags(x, y)                  (tileCatalog[pmap[x][y].layers[DUNGEON]].flags \
+                                            | tileCatalog[pmap[x][y].layers[LIQUID]].flags \
+                                            | tileCatalog[pmap[x][y].layers[SURFACE]].flags \
+                                            | tileCatalog[pmap[x][y].layers[GAS]].flags)
+
+#define terrainMechFlags(x, y)              (tileCatalog[pmap[x][y].layers[DUNGEON]].mechFlags \
+                                            | tileCatalog[pmap[x][y].layers[LIQUID]].mechFlags \
+                                            | tileCatalog[pmap[x][y].layers[SURFACE]].mechFlags \
+                                            | tileCatalog[pmap[x][y].layers[GAS]].mechFlags)
+
+inline static boolean cellHasTerrainFlag(int x, int y, unsigned long flagMask) {
+#ifdef BROGUE_ASSERTS
+    assert(coordinatesAreInMap(x, y));
+#endif
+    return flagMask & terrainFlags(x, y) ? true : false;
+}
+
+inline static boolean cellAtPosHasTerrainFlag(pos p, unsigned long flagMask) {
+    return cellHasTerrainFlag(p.x, p.y, flagMask);
+}
+
 
 // ITEMS
 extern char itemCategoryNames[NUMBER_ITEM_CATEGORIES][11];

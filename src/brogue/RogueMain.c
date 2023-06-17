@@ -777,8 +777,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
 
         placedPlayer = false;
         for (dir=0; dir<4 && !placedPlayer; dir++) {
-            loc.x = player.loc.x + nbDirs[dir][0];
-            loc.y = player.loc.y + nbDirs[dir][1];
+            loc = nbDirOffset(player.loc, dir);
             if (!cellHasTerrainFlag(loc.x, loc.y, T_PATHING_BLOCKER)
                 && !(pmap[loc.x][loc.y].flags & (HAS_MONSTER | HAS_ITEM | HAS_STAIRS | IS_IN_MACHINE))) {
                 placedPlayer = true;

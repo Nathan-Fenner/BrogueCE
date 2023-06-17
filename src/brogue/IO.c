@@ -2347,53 +2347,48 @@ void displayLoops() {
 }
 
 void exploreKey(const boolean controlKey) {
-    short x, y, finalX = 0, finalY = 0;
-    short **exploreMap;
     enum directions dir;
     boolean tooDark = false;
 
     // fight any adjacent enemies first
+    pos p;
+    pos final = {0, 0};
     dir = adjacentFightingDir();
     if (dir == NO_DIRECTION) {
         for (dir = 0; dir < DIRECTION_COUNT; dir++) {
-            x = player.loc.x + nbDirs[dir][0];
-            y = player.loc.y + nbDirs[dir][1];
-            if (coordinatesAreInMap(x, y)
-                && !(pmap[x][y].flags & DISCOVERED)) {
+            p = nbDirOffset(player.loc, dir);
+            if (coordinatesAreInMap(p.x, p.y)
+                && !(pmap[p.x][p.y].flags & DISCOVERED)) {
 
                 tooDark = true;
                 break;
             }
         }
         if (!tooDark) {
-            x = finalX = player.loc.x;
-            y = finalY = player.loc.y;
+            p = final = player.loc;
 
-            exploreMap = allocGrid();
+            short **exploreMap = allocGrid();
             getExploreMap(exploreMap, false);
             do {
-                dir = nextStep(exploreMap, x, y, NULL, false);
+                dir = nextStep(exploreMap, p.x, p.y, NULL, false);
                 if (dir != NO_DIRECTION) {
-                    x += nbDirs[dir][0];
-                    y += nbDirs[dir][1];
-                    if (pmap[x][y].flags & (DISCOVERED | MAGIC_MAPPED)) {
-                        finalX = x;
-                        finalY = y;
+                    p = nbDirOffset(p, dir);
+                    if (pmap[p.x][p.y].flags & (DISCOVERED | MAGIC_MAPPED)) {
+                        final = p;
                     }
                 }
             } while (dir != NO_DIRECTION);
             freeGrid(exploreMap);
         }
     } else {
-        x = finalX = player.loc.x + nbDirs[dir][0];
-        y = finalY = player.loc.y + nbDirs[dir][1];
+        p = final = nbDirOffset(player.loc, dir);
     }
 
     if (tooDark) {
         message("It's too dark to explore!", 0);
-    } else if (x == player.loc.x && y == player.loc.y) {
+    } else if (p.x == player.loc.x && p.y == player.loc.y) {
         message("I see no path for further exploration.", 0);
-    } else if (proposeOrConfirmLocation(finalX, finalY, "I see no path for further exploration.")) {
+    } else if (proposeOrConfirmLocation(final.x, final.y, "I see no path for further exploration.")) {
         explore(controlKey ? 1 : 20); // Do the exploring until interrupted.
         hideCursor();
         exploreKey(controlKey);

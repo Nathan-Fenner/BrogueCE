@@ -1235,21 +1235,6 @@ enum tileFlags {
 #define max(x, y)       (((x) > (y)) ? (x) : (y))
 #define clamp(x, low, hi)   (min(hi, max(x, low))) // pins x to the [y, z] interval
 
-#define terrainFlags(x, y)                  (tileCatalog[pmap[x][y].layers[DUNGEON]].flags \
-                                            | tileCatalog[pmap[x][y].layers[LIQUID]].flags \
-                                            | tileCatalog[pmap[x][y].layers[SURFACE]].flags \
-                                            | tileCatalog[pmap[x][y].layers[GAS]].flags)
-
-#define terrainMechFlags(x, y)              (tileCatalog[pmap[x][y].layers[DUNGEON]].mechFlags \
-                                            | tileCatalog[pmap[x][y].layers[LIQUID]].mechFlags \
-                                            | tileCatalog[pmap[x][y].layers[SURFACE]].mechFlags \
-                                            | tileCatalog[pmap[x][y].layers[GAS]].mechFlags)
-
-#ifdef BROGUE_ASSERTS
-boolean cellHasTerrainFlag(short x, short y, unsigned long flagMask);
-#else
-#define cellHasTerrainFlag(x, y, flagMask)  ((flagMask) & terrainFlags((x), (y)) ? true : false)
-#endif
 #define cellHasTMFlag(x, y, flagMask)       ((flagMask) & terrainMechFlags((x), (y)) ? true : false)
 
 #define cellHasTerrainType(x, y, terrain)   ((pmap[x][y].layers[DUNGEON] == (terrain) \
@@ -1263,7 +1248,13 @@ boolean cellHasTerrainFlag(short x, short y, unsigned long flagMask);
                                             || (cellHasTMFlag((x), (y), (TM_IS_SECRET | TM_PROMOTES_WITH_KEY | TM_CONNECTS_LEVEL)) \
                                                 && cellHasTerrainFlag((x), (y), T_OBSTRUCTS_PASSABILITY)))
 
-#define coordinatesAreInMap(x, y)           ((x) >= 0 && (x) < DCOLS    && (y) >= 0 && (y) < DROWS)
+inline static boolean coordinatesAreInMap(int x, int y) {
+    return x >= 0 && x < DCOLS && y >= 0 && y < DROWS;
+}
+
+inline static boolean posIsInMap(pos p) {
+    return coordinatesAreInMap(p.x, p.y);
+}
 
 inline static boolean locIsInWindow(windowpos w) {
     return w.window_x >= 0 && w.window_x < COLS && w.window_y >= 0 && w.window_y < ROWS;

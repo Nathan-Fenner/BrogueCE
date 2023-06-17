@@ -147,10 +147,7 @@ boolean attackHit(creature *attacker, creature *defender) {
 void addMonsterToContiguousMonsterGrid(pos destination, creature *monst, char grid[DCOLS][DROWS]) {
     grid[destination.x][destination.y] = true;
     for (enum directions dir=0; dir<4; dir++) {
-        const pos newPosition = {
-            destination.x + nbDirs[dir][0],
-            destination.y + nbDirs[dir][1]
-        };
+        const pos newPosition = nbDirOffset(destination, dir);
 
         if (coordinatesAreInMap(newPosition.x, newPosition.y) && !grid[newPosition.x][newPosition.y]) {
             creature *tempMonst = monsterAtLoc(newPosition.x, newPosition.y);
@@ -794,7 +791,7 @@ void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *
     char armorName[DCOLS], attackerName[DCOLS], monstName[DCOLS], buf[DCOLS * 3];
     boolean runicKnown;
     boolean runicDiscovered;
-    short newDamage, dir, newX, newY, count, i;
+    short newDamage, dir, count, i;
     fixpt enchant;
     creature *monst, *hitList[8];
 
@@ -862,10 +859,9 @@ void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *
                 for (i=0; i<8; i++) {
                     hitList[i] = NULL;
                     dir = i % 8;
-                    newX = player.loc.x + nbDirs[dir][0];
-                    newY = player.loc.y + nbDirs[dir][1];
-                    if (coordinatesAreInMap(newX, newY) && (pmap[newX][newY].flags & HAS_MONSTER)) {
-                        monst = monsterAtLoc(newX, newY);
+                    const pos newPos = nbDirOffset(player.loc, dir);
+                    if (coordinatesAreInMap(newPos.x, newPos.y) && (pmap[newPos.x][newPos.y].flags & HAS_MONSTER)) {
+                        monst = monsterAtLoc(newPos.x, newPos.y);
                         if (monst
                             && monst != attacker
                             && monstersAreEnemies(&player, monst)

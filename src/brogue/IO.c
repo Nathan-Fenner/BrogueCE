@@ -1865,17 +1865,17 @@ void plotCharToBuffer(enum displayGlyph inputChar, windowpos loc, color *foreCol
     restoreRNG;
 }
 
-void plotForegroundChar(enum displayGlyph inputChar, short x, short y, color *foreColor, boolean affectedByLighting) {
+void plotForegroundChar(enum displayGlyph inputChar, pos location, color *foreColor, boolean affectedByLighting) {
     color multColor, myColor, backColor, ignoredColor;
     enum displayGlyph ignoredChar;
 
     myColor = *foreColor;
-    getCellAppearance(x, y, &ignoredChar, &ignoredColor, &backColor);
+    getCellAppearance(location.x, location.y, &ignoredChar, &ignoredColor, &backColor);
     if (affectedByLighting) {
-        colorMultiplierFromDungeonLight(x, y, &multColor);
+        colorMultiplierFromDungeonLight(location.x, location.y, &multColor);
         applyColorMultiplier(&myColor, &multColor);
     }
-    plotCharWithColor(inputChar, mapToWindow((pos){ x, y }), &myColor, &backColor);
+    plotCharWithColor(inputChar, mapToWindow(location), &myColor, &backColor);
 }
 
 // Debug feature: display the level to the screen without regard to lighting, field of view, etc.

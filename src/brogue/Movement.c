@@ -626,7 +626,7 @@ boolean handleWhipAttacks(creature *attacker, enum directions dir, boolean *abor
 // (in which case the player/monster should move instead).
 boolean handleSpearAttacks(creature *attacker, enum directions dir, boolean *aborted) {
     creature *defender, *hitList[8] = {0};
-    short targetLoc[2], range = 2, i = 0, h = 0;
+    short range = 2, i = 0, h = 0;
     boolean proceed = false, visualEffect = false;
 
     const char boltChar[DIRECTION_COUNT] = "||--\\//\\";
@@ -642,18 +642,20 @@ boolean handleSpearAttacks(creature *attacker, enum directions dir, boolean *abo
     }
 
     for (i = 0; i < range; i++) {
-        targetLoc[0] = attacker->loc.x + (1 + i) * nbDirs[dir][0];
-        targetLoc[1] = attacker->loc.y + (1 + i) * nbDirs[dir][1];
-        if (!coordinatesAreInMap(targetLoc[0], targetLoc[1])) {
+        const pos targetLoc = {
+            attacker->loc.x + (1 + i) * nbDirs[dir][0],
+            attacker->loc.y + (1 + i) * nbDirs[dir][1]
+        };
+        if (!coordinatesAreInMap(targetLoc.x, targetLoc.y)) {
             break;
         }
 
         /* Add creatures that we are willing to attack to the potential
         hitlist. Any of those that are either right by us or visible will
         trigger the attack. */
-        defender = monsterAtLoc(targetLoc[0], targetLoc[1]);
+        defender = monsterAtLoc(targetLoc.x, targetLoc.y);
         if (defender
-            && (!cellHasTerrainFlag(targetLoc[0], targetLoc[1], T_OBSTRUCTS_PASSABILITY)
+            && (!cellHasTerrainFlag(targetLoc.x, targetLoc.y, T_OBSTRUCTS_PASSABILITY)
                 || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))
             && monsterWillAttackTarget(attacker, defender)) {
 
@@ -669,7 +671,7 @@ boolean handleSpearAttacks(creature *attacker, enum directions dir, boolean *abo
             }
         }
 
-        if (cellHasTerrainFlag(targetLoc[0], targetLoc[1], (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION))) {
+        if (cellHasTerrainFlag(targetLoc.x, targetLoc.y, (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION))) {
             break;
         }
     }
@@ -685,13 +687,15 @@ boolean handleSpearAttacks(creature *attacker, enum directions dir, boolean *abo
         }
         if (!rogue.playbackFastForward) {
             for (i = 0; i < range; i++) {
-                targetLoc[0] = attacker->loc.x + (1 + i) * nbDirs[dir][0];
-                targetLoc[1] = attacker->loc.y + (1 + i) * nbDirs[dir][1];
-                if (coordinatesAreInMap(targetLoc[0], targetLoc[1])
-                    && playerCanSeeOrSense(targetLoc[0], targetLoc[1])) {
+                const pos targetLoc = {
+                    attacker->loc.x + (1 + i) * nbDirs[dir][0],
+                    attacker->loc.y + (1 + i) * nbDirs[dir][1]
+                };
+                if (coordinatesAreInMap(targetLoc.x, targetLoc.y)
+                    && playerCanSeeOrSense(targetLoc.x, targetLoc.y)) {
 
                     visualEffect = true;
-                    plotForegroundChar(boltChar[dir], targetLoc[0], targetLoc[1], &lightBlue, true);
+                    plotForegroundChar(boltChar[dir], targetLoc, &lightBlue, true);
                 }
             }
         }
@@ -704,10 +708,12 @@ boolean handleSpearAttacks(creature *attacker, enum directions dir, boolean *abo
         if (visualEffect) {
             pauseAnimation(16);
             for (i = 0; i < range; i++) {
-                targetLoc[0] = attacker->loc.x + (1 + i) * nbDirs[dir][0];
-                targetLoc[1] = attacker->loc.y + (1 + i) * nbDirs[dir][1];
-                if (coordinatesAreInMap(targetLoc[0], targetLoc[1])) {
-                    refreshDungeonCell(targetLoc[0], targetLoc[1]);
+                const pos targetLoc = {
+                    attacker->loc.x + (1 + i) * nbDirs[dir][0],
+                    attacker->loc.y + (1 + i) * nbDirs[dir][1]
+                };
+                if (coordinatesAreInMap(targetLoc.x, targetLoc.y)) {
+                    refreshDungeonCell(targetLoc.x, targetLoc.y);
                 }
             }
         }

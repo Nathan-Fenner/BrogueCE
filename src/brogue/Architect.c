@@ -1783,7 +1783,7 @@ void runAutogenerators(boolean buildAreaMachines) {
 
                         if (D_INSPECT_LEVELGEN) {
                             dumpLevelToScreen();
-                            hiliteCell(featureLoc.x, featureLoc.y, &yellow, 50, true);
+                            hiliteCell(featureLoc, &yellow, 50, true);
                             temporaryMessage("Dungeon feature added.", REQUIRE_ACKNOWLEDGMENT);
                         }
                     }
@@ -1803,7 +1803,7 @@ void runAutogenerators(boolean buildAreaMachines) {
 
                             if (D_INSPECT_LEVELGEN) {
                                 dumpLevelToScreen();
-                                hiliteCell(featureLoc.x, featureLoc.y, &yellow, 50, true);
+                                hiliteCell(featureLoc, &yellow, 50, true);
                                 temporaryMessage("Terrain added.", REQUIRE_ACKNOWLEDGMENT);
                             }
                         }

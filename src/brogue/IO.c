@@ -673,8 +673,7 @@ void mainInputLoop() {
             }
 
             if (coordinatesAreInMap(rogue.cursorLoc.x, rogue.cursorLoc.y)) {
-                hiliteCell(rogue.cursorLoc.x,
-                           rogue.cursorLoc.y,
+                hiliteCell(rogue.cursorLoc,
                            &white,
                            (steps <= 0
                             || (path[steps-1][0] == rogue.cursorLoc.x && path[steps-1][1] == rogue.cursorLoc.y)
@@ -1746,19 +1745,19 @@ void colorBlendCell(short x, short y, color *hiliteColor, short hiliteStrength) 
 }
 
 // takes dungeon coordinates
-void hiliteCell(short x, short y, const color *hiliteColor, short hiliteStrength, boolean distinctColors) {
+void hiliteCell(pos location, const color *hiliteColor, short hiliteStrength, boolean distinctColors) {
     enum displayGlyph displayChar;
     color foreColor, backColor;
 
     assureCosmeticRNG;
 
-    getCellAppearance(x, y, &displayChar, &foreColor, &backColor);
+    getCellAppearance(location.x, location.y, &displayChar, &foreColor, &backColor);
     applyColorAugment(&foreColor, hiliteColor, hiliteStrength);
     applyColorAugment(&backColor, hiliteColor, hiliteStrength);
     if (distinctColors) {
         separateColors(&foreColor, &backColor);
     }
-    plotCharWithColor(displayChar, mapToWindow((pos){ x, y }), &foreColor, &backColor);
+    plotCharWithColor(displayChar, mapToWindow(location), &foreColor, &backColor);
 
     restoreRNG;
 }
@@ -2132,7 +2131,7 @@ void colorFlash(const color *theColor, unsigned long reqTerrainFlags,
                     intensity = 100 - 100 * (currentRadius - localRadius[i][j] - 2) / currentRadius;
                     intensity = fadeOut * intensity / 100;
 
-                    hiliteCell(i, j, theColor, intensity, false);
+                    hiliteCell((pos){i, j}, theColor, intensity, false);
                 }
             }
         }
@@ -2254,7 +2253,7 @@ void displayWaypoints() {
                 }
             }
             if (lowestDistance < 10) {
-                hiliteCell(i, j, &white, clamp(100 - lowestDistance*15, 0, 100), true);
+                hiliteCell((pos){i, j}, &white, clamp(100 - lowestDistance*15, 0, 100), true);
             }
         }
     }

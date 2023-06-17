@@ -5093,7 +5093,7 @@ boolean zap(pos originLoc, pos targetLoc, bolt *theBolt, boolean hideDetails, bo
                 for (k = min(j, boltLength + 2); k >= j-i; k--) {
                     if (playerCanSee(listOfCoordinates[j-k].x, listOfCoordinates[j-k].y)) {
                         if (boltColor) {
-                            hiliteCell(listOfCoordinates[j-k].x, listOfCoordinates[j-k].y, boltColor, max(0, 100 - k * 100 / (boltLength)), false);
+                            hiliteCell(listOfCoordinates[j-k], boltColor, max(0, 100 - k * 100 / (boltLength)), false);
                         }
                         boltInView = true;
                     }
@@ -5207,7 +5207,7 @@ short hiliteTrajectory(const pos coordinateList[DCOLS], short numCells, boolean 
         if (eraseHiliting) {
             refreshDungeonCell(x, y);
         } else {
-            hiliteCell(x, y, hiliteColor, 20, true);
+            hiliteCell((pos){x, y}, hiliteColor, 20, true);
         }
 
         if (!(pmap[x][y].flags & DISCOVERED)) {
@@ -5583,7 +5583,7 @@ boolean chooseTarget(pos *returnLoc,
                     break;
                 }
             }
-            hiliteCell(targetLoc.x, targetLoc.y, &white, (cursorInTrajectory ? 100 : 35), true);
+            hiliteCell(targetLoc, &white, (cursorInTrajectory ? 100 : 35), true);
         }
 
         oldTargetLoc = targetLoc;
@@ -7539,7 +7539,7 @@ item *itemAtLoc(short x, short y) {
     for (theItem = floorItems->nextItem; theItem != NULL && (theItem->loc.x != x || theItem->loc.y != y); theItem = theItem->nextItem);
     if (theItem == NULL) {
         pmap[x][y].flags &= ~HAS_ITEM;
-        hiliteCell(x, y, &white, 75, true);
+        hiliteCell((pos){x, y}, &white, 75, true);
         rogue.automationActive = false;
         message("ERROR: An item was supposed to be here, but I couldn't find it.", REQUIRE_ACKNOWLEDGMENT);
         refreshDungeonCell(x, y);

@@ -1461,7 +1461,7 @@ void displayRoute(short **distanceMap, boolean removeRoute) {
         if (removeRoute) {
             refreshDungeonCell(currentX, currentY);
         } else {
-            hiliteCell(currentX, currentY, &hiliteColor, 50, true);
+            hiliteCell((pos){currentX, currentY}, &hiliteColor, 50, true);
         }
         advanced = false;
         for (dir = 7; dir >= 0; dir--) {

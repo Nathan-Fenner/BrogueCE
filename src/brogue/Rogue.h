@@ -2876,7 +2876,7 @@ extern "C" {
                                 short frameCount,
                                 boolean outsideIn);
     void colorBlendCell(short x, short y, color *hiliteColor, short hiliteStrength);
-    void hiliteCell(short x, short y, const color *hiliteColor, short hiliteStrength, boolean distinctColors);
+    void hiliteCell(pos location, const color *hiliteColor, short hiliteStrength, boolean distinctColors);
     void colorMultiplierFromDungeonLight(short x, short y, color *editColor);
     void plotCharWithColor(enum displayGlyph inputChar, windowpos loc, const color *cellForeColor, const color *cellBackColor);
     void plotCharToBuffer(enum displayGlyph inputChar, windowpos loc, color *foreColor, color *backColor, cellDisplayBuffer dbuf[COLS][ROWS]);

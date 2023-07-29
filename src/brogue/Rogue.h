@@ -3249,14 +3249,18 @@ extern "C" {
     void unequip(item *theItem);
     void drop(item *theItem);
     void findAlternativeHomeFor(creature *monst, short *x, short *y, boolean chooseRandomly);
+
+    typedef struct LocationQualifications {
+        boolean hallwaysAllowed;
+        char *blockingMap[DCOLS][DROWS];
+        unsigned long forbiddenTerrainFlags;
+        unsigned long forbiddenMapFlags;
+        boolean forbidLiquid;
+        boolean deterministic;
+    } LocationQualifications;
     boolean getQualifyingLocNear(pos *loc,
-                                 short x, short y,
-                                 boolean hallwaysAllowed,
-                                 char blockingMap[DCOLS][DROWS],
-                                 unsigned long forbiddenTerrainFlags,
-                                 unsigned long forbiddenMapFlags,
-                                 boolean forbidLiquid,
-                                 boolean deterministic);
+                                 pos targetLoc,
+                                 LocationQualifications qualifications);
     boolean getQualifyingGridLocNear(pos *loc,
                                      short x, short y,
                                      boolean grid[DCOLS][DROWS],

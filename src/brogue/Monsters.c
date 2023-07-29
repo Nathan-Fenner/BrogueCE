@@ -3815,14 +3815,11 @@ void findAlternativeHomeFor(creature *monst, short *x, short *y, boolean chooseR
 
 // blockingMap is optional
 boolean getQualifyingLocNear(pos *loc,
-                             short x, short y,
-                             boolean hallwaysAllowed,
-                             char blockingMap[DCOLS][DROWS],
-                             unsigned long forbiddenTerrainFlags,
-                             unsigned long forbiddenMapFlags,
-                             boolean forbidLiquid,
-                             boolean deterministic) {
+                             pos targetLoc,
+                             LocationQualifications qualifications) {
     short candidateLocs = 0;
+    int x = targetLoc.x;
+    int y = targetLoc.y;
 
     // count up the number of candidate locations
     for (int k=0; k<max(DROWS, DCOLS) && !candidateLocs; k++) {
@@ -3830,11 +3827,11 @@ boolean getQualifyingLocNear(pos *loc,
             for (int j = y-k; j <= y+k; j++) {
                 if (coordinatesAreInMap(i, j)
                     && (i == x-k || i == x+k || j == y-k || j == y+k)
-                    && (!blockingMap || !blockingMap[i][j])
-                    && !cellHasTerrainFlag(i, j, forbiddenTerrainFlags)
-                    && !(pmap[i][j].flags & forbiddenMapFlags)
-                    && (!forbidLiquid || pmap[i][j].layers[LIQUID] == NOTHING)
-                    && (hallwaysAllowed || passableArcCount(i, j) < 2)) {
+                    && (!qualifications.blockingMap || !qualifications.blockingMap[i][j])
+                    && !cellHasTerrainFlag(i, j, qualifications.forbiddenTerrainFlags)
+                    && !(pmap[i][j].flags & qualifications.forbiddenMapFlags)
+                    && (!qualifications.forbidLiquid || pmap[i][j].layers[LIQUID] == NOTHING)
+                    && (qualifications.hallwaysAllowed || passableArcCount(i, j) < 2)) {
                     candidateLocs++;
                 }
             }
@@ -3847,7 +3844,7 @@ boolean getQualifyingLocNear(pos *loc,
 
     // and pick one
     short randIndex;
-    if (deterministic) {
+    if (qualifications.deterministic) {
         randIndex = 1 + candidateLocs / 2;
     } else {
         randIndex = rand_range(1, candidateLocs);
@@ -3858,11 +3855,11 @@ boolean getQualifyingLocNear(pos *loc,
             for (int j = y-k; j <= y+k; j++) {
                 if (coordinatesAreInMap(i, j)
                     && (i == x-k || i == x+k || j == y-k || j == y+k)
-                    && (!blockingMap || !blockingMap[i][j])
-                    && !cellHasTerrainFlag(i, j, forbiddenTerrainFlags)
-                    && !(pmap[i][j].flags & forbiddenMapFlags)
-                    && (!forbidLiquid || pmap[i][j].layers[LIQUID] == NOTHING)
-                    && (hallwaysAllowed || passableArcCount(i, j) < 2)) {
+                    && (!qualifications.blockingMap || !qualifications.blockingMap[i][j])
+                    && !cellHasTerrainFlag(i, j, qualifications.forbiddenTerrainFlags)
+                    && !(pmap[i][j].flags & qualifications.forbiddenMapFlags)
+                    && (!qualifications.forbidLiquid || pmap[i][j].layers[LIQUID] == NOTHING)
+                    && (qualifications.hallwaysAllowed || passableArcCount(i, j) < 2)) {
                     if (--randIndex == 0) {
                         *loc = (pos){ .x = i, .y = j };
                         return true;

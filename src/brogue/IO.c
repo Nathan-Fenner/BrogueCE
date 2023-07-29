@@ -104,7 +104,9 @@ void showCursor() {
     }
 }
 
-pos getClosestValidLocationOnMap(short **map, short x, short y) {
+pos getClosestValidLocationOnMap(short **map, pos targetLoc) {
+    short x = targetLoc.x;
+    short y = targetLoc.y;
     pos answer = INVALID_POS;
 
     int closestDistance = 10000;
@@ -626,7 +628,7 @@ void mainInputLoop() {
                         pathDestination = rogue.cursorLoc;
                     } else {
                         // If the cursor is aimed at an inaccessible area, find the nearest accessible area to path toward.
-                        pathDestination = getClosestValidLocationOnMap(cursorSnapMap, rogue.cursorLoc.x, rogue.cursorLoc.y);
+                        pathDestination = getClosestValidLocationOnMap(cursorSnapMap, rogue.cursorLoc);
                     }
 
                     fillGrid(playerPathingMap, 30000);

@@ -1190,7 +1190,18 @@ void updateFloorItems() {
         }
         if (cellHasTerrainFlag(x, y, T_MOVES_ITEMS)) {
             pos loc;
-            getQualifyingLocNear(&loc, x, y, true, 0, (T_OBSTRUCTS_ITEMS | T_OBSTRUCTS_PASSABILITY), (HAS_ITEM), false, false);
+            getQualifyingLocNear(
+                &loc,
+                (pos){x, y},
+                (LocationQualifications) {
+                    .hallwaysAllowed = true,
+                    .blockingMap = NULL,
+                    .forbiddenTerrainFlags = (T_OBSTRUCTS_ITEMS | T_OBSTRUCTS_PASSABILITY),
+                    .forbiddenMapFlags = (HAS_ITEM),
+                    .forbidLiquid = false,
+                    .deterministic = false,
+                }
+            );
             removeItemFrom(x, y);
             pmapAt(loc)->flags |= HAS_ITEM;
             if (pmap[x][y].flags & ITEM_DETECTED) {
@@ -6123,7 +6134,18 @@ void throwItem(item *theItem, creature *thrower, pos targetLoc, short maxDistanc
         return;
     }
     pos dropLoc;
-    getQualifyingLocNear(&dropLoc, x, y, true, 0, (T_OBSTRUCTS_ITEMS | T_OBSTRUCTS_PASSABILITY), (HAS_ITEM), false, false);
+    getQualifyingLocNear(
+        &dropLoc,
+        (pos){ x, y },
+        (LocationQualifications) {
+            .hallwaysAllowed = true,
+            .blockingMap = NULL,
+            .forbiddenTerrainFlags = (T_OBSTRUCTS_ITEMS | T_OBSTRUCTS_PASSABILITY),
+            .forbiddenMapFlags = (HAS_ITEM),
+            .forbidLiquid = false,
+            .deterministic = false,
+        }
+    );
     placeItem(theItem, dropLoc.x, dropLoc.y);
     refreshDungeonCell(dropLoc.x, dropLoc.y);
 }

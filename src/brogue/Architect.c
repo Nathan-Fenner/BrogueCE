@@ -3303,14 +3303,18 @@ void evacuateCreatures(char blockingMap[DCOLS][DROWS]) {
 
                 monst = monsterAtLoc((pos) { i, j });
                 pos newLoc;
-                getQualifyingLocNear(&newLoc,
-                                     i, j,
-                                     true,
-                                     blockingMap,
-                                     forbiddenFlagsForMonster(&(monst->info)),
-                                     (HAS_MONSTER | HAS_PLAYER),
-                                     false,
-                                     false);
+                getQualifyingLocNear(
+                    &newLoc,
+                    (pos){ i, j },
+                    (LocationQualifications) {
+                        .hallwaysAllowed = true,
+                        .blockingMap = blockingMap,
+                        .forbiddenTerrainFlags = forbiddenFlagsForMonster(&(monst->info)),
+                        .forbiddenMapFlags = (HAS_MONSTER | HAS_PLAYER),
+                        .forbidLiquid = false,
+                        .deterministic = false,
+                    }
+                );
                 monst->loc = newLoc;
                 pmap[i][j].flags &= ~(HAS_MONSTER | HAS_PLAYER);
                 pmapAt(newLoc)->flags |= (monst == &player ? HAS_PLAYER : HAS_MONSTER);
@@ -3532,9 +3536,17 @@ void restoreItem(item *theItem) {
 
         pos loc;
         // Items can fall into deep water, enclaved lakes, another chasm, even lava!
-        getQualifyingLocNear(&loc, theItem->loc.x, theItem->loc.y, true, 0,
-                            (T_OBSTRUCTS_ITEMS),
-                            (HAS_MONSTER | HAS_ITEM | HAS_STAIRS), false, false);
+        getQualifyingLocNear(
+            &loc,
+            theItem->loc,
+            (LocationQualifications) {
+                .hallwaysAllowed = true,
+                .blockingMap = NULL,
+                .forbiddenTerrainFlags = (T_OBSTRUCTS_ITEMS),
+                .forbiddenMapFlags = (HAS_MONSTER | HAS_ITEM | HAS_STAIRS),
+                .forbidLiquid = false,
+                .deterministic = false,
+            });
 
         theItem->loc = loc;
     }
@@ -3658,9 +3670,17 @@ void initializeLevel() {
     if (getQualifyingGridLocNear(&downLoc, levels[n].downStairsLoc.x, levels[n].downStairsLoc.y, grid, false)) {
         prepareForStairs(downLoc.x, downLoc.y, grid);
     } else {
-        getQualifyingLocNear(&downLoc, levels[n].downStairsLoc.x, levels[n].downStairsLoc.y, false, 0,
-                             (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_ITEMS | T_AUTO_DESCENT | T_IS_DEEP_WATER | T_LAVA_INSTA_DEATH | T_IS_DF_TRAP),
-                             (HAS_MONSTER | HAS_ITEM | HAS_STAIRS | IS_IN_MACHINE), true, false);
+        getQualifyingLocNear(
+            &downLoc,
+            levels[n].downStairsLoc,
+            (LocationQualifications) {
+                .hallwaysAllowed = false,
+                .blockingMap = NULL,
+                .forbiddenTerrainFlags = (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_ITEMS | T_AUTO_DESCENT | T_IS_DEEP_WATER | T_LAVA_INSTA_DEATH | T_IS_DF_TRAP),
+                .forbiddenMapFlags = (HAS_MONSTER | HAS_ITEM | HAS_STAIRS | IS_IN_MACHINE),
+                .forbidLiquid = true,
+                .deterministic = false,
+            });
     }
 
     if (rogue.depthLevel == gameConst->deepestLevel) {
@@ -3680,9 +3700,18 @@ void initializeLevel() {
     if (getQualifyingGridLocNear(&upLoc, levels[n].upStairsLoc.x, levels[n].upStairsLoc.y, grid, false)) {
         prepareForStairs(upLoc.x, upLoc.y, grid);
     } else { // Hopefully this never happens.
-        getQualifyingLocNear(&upLoc, levels[n].upStairsLoc.x, levels[n].upStairsLoc.y, false, 0,
-                             (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_ITEMS | T_AUTO_DESCENT | T_IS_DEEP_WATER | T_LAVA_INSTA_DEATH | T_IS_DF_TRAP),
-                             (HAS_MONSTER | HAS_ITEM | HAS_STAIRS | IS_IN_MACHINE), true, false);
+        getQualifyingLocNear(
+            &upLoc,
+            levels[n].upStairsLoc,
+            (LocationQualifications) {
+                .hallwaysAllowed = false,
+                .blockingMap = NULL,
+                .forbiddenTerrainFlags = (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_ITEMS | T_AUTO_DESCENT | T_IS_DEEP_WATER | T_LAVA_INSTA_DEATH | T_IS_DF_TRAP),
+                .forbiddenMapFlags = (HAS_MONSTER | HAS_ITEM | HAS_STAIRS | IS_IN_MACHINE),
+                .forbidLiquid = true,
+                .deterministic = false,
+            }
+        );
     }
 
     levels[n].upStairsLoc = upLoc;
